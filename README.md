@@ -1,27 +1,3 @@
-<h1>Título do Projeto</h1>
-<p>Uma Ferramenta de Seleção de Features Baseada na Metaheurística GRASP com Fila de Prioridades para Sistemas de Detecção de Intrusão</p>
-
-<h2>Resumo do Artigo</h2>
-A crescente complexidade dos sistemas ciberfísicos exige mecanismos de segurança mais robustos. Nesse contexto, Sistemas de Detecção de Intrusão (IDSs) enfrentam o desafio de lidar com dados altamente dimensionais, o que compromete o desempenho e eleva o custo computacional. Este trabalho apresenta uma ferramenta para seleção de features em IDSs, baseada na metaheurística GRASP (Greedy Randomized Adaptive Search Procedure) com uso de fila de prioridades. A ferramenta é modular, automatizada e parametrizável, permitindo controlar aspectos como algoritmo de avaliação, número de iterações e tamanho da RCL (Restricted Candidate List). Os resultados indicam que a ferramenta reduz a dimensionalidade dos dados preservando, e em alguns casos ampliando, o desempenho preditivo dos modelos. Conclui-se que a proposta é eficaz e reprodutível para aplicações em cibersegurança.</p>
-
-<h2>Selos Considerados</h2>
-<p>Os selos que devem ser considerados no processo de avaliação são:</p>
-<ul>
-    <li>
-        <b>Artefatos Disponíveis (SeloD):</b> O código-fonte e os conjuntos de dados utilizados para os experimentos estão publicamente disponíveis neste repositório.
-    </li>
-    <li>
-        <b>Artefatos Funcionais (SeloF):</b> A ferramenta é executável via linha de comando (local ou Docker), com instruções claras e exemplos de testes funcionais.
-    </li>
-    <li>
-        <b>Artefatos Sustentáveis (SeloS):</b> A arquitetura da ferramenta é modular, com divisão de responsabilidades entre arquivos (e.g., <code>main.py</code> (orquestração), <code>utils.py</code> (utilitários de dados e avaliação) e <code>priority_queue.py</code> (estrutura de dados). O código possui nomenclaturas claras e comentários estratégicos.
-    </li>
-    <li>
-        <b>Experimentos Reprodutíveis (SeloR):</b> O <code>README.md</code> detalha os passos para reproduzir as principais reivindicações do artigo, com suporte a Docker e geração automática de resultados.
-    </li>
-</ul>
-
-<br>
 <a name="portuguese"></a>
 <h1 align="center">📌 Bem-vindo ao GRASPQ-FS Tool! 📌</h1>
 
