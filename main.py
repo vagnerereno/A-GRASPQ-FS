@@ -28,21 +28,21 @@ logger.addHandler(console_handler)
 def evaluate_algorithm(features_idx, algorithm):
     features = [feature_names[i] for i in features_idx]
     if algorithm == 'knn':
-        model = KNeighborsClassifier()
+        model = KNeighborsClassifier(n_jobs=-1)
     elif algorithm == 'dt':
         model = DecisionTreeClassifier(random_state=42)
     elif algorithm == 'nb':
         model = GaussianNB(var_smoothing=1e-9)
-    elif algorithm == 'svm':
-        model = SVC()
+    elif algorithm == 'svm': # Warning: This is EXTREMELY SLOW on large datasets
+        model = SVC(random_state=42)
     elif algorithm == 'rf':
-        model = RandomForestClassifier(random_state=42)
+        model = RandomForestClassifier(random_state=42, n_jobs=-1)
     elif algorithm == 'xgboost':
-        model = xgb.XGBClassifier(eval_metric='mlogloss', random_state=42)
+        model = xgb.XGBClassifier(eval_metric='mlogloss', random_state=42, n_jobs=-1)
     elif algorithm == 'linear_svc':
-        model = LinearSVC(max_iter=1000, random_state=42)
+        model = LinearSVC(max_iter=1000, random_state=42, dual=False)
     elif algorithm == 'sgd':
-        model = SGDClassifier(max_iter=1000, tol=1e-3, random_state=42)
+        model = SGDClassifier(max_iter=1000, tol=1e-3, random_state=42, n_jobs=-1)
     else:
         raise ValueError("Unsupported algorithm")
 
