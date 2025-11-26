@@ -83,45 +83,84 @@ def local_search(initial_solution, repeated_solutions_count, algorithm, rcl_size
     best_solution = initial_solution.copy()
     seen_solutions = {frozenset(initial_solution)}
 
-    logging.info(f"Starting Local Search with initial solution: {initial_solution}, F1-Score: {max_f1_score}")
+    logging.info(f"Starting VNS Local Search with initial solution: {initial_solution}, F1-Score: {max_f1_score:.4f}")
 
     for iteration in range(args.local_iterations):
-        new_solution = best_solution.copy()
+        current_solution = best_solution.copy()
 
-        logging.info(
-            f"  → Local Iteration {iteration + 1}/{args.local_iterations} | Current best F1: {max_f1_score:.4f}")
+        rcl_indices = [feature_names.index(feat) for feat, _ in sorted_features[:rcl_size]]
 
-        for replace_index in range(len(new_solution)):
-            RCL = [feature_names.index(feature) for feature, score in sorted_features[:rcl_size]
-                   if feature_names.index(feature) not in new_solution]
-            if not RCL:
-                logging.info("    ✖ RCL is empty. No replacement possible.")
-                break
+        # Candidatos para ADICIONAR (estão na RCL mas não na solução)
+        candidates_to_add = [idx for idx in rcl_indices if idx not in current_solution]
 
-            new_feature = random.choice(RCL)
-            new_solution[replace_index] = new_feature
+        # Candidatos para REMOVER (estão na solução atual)
+        candidates_to_remove = current_solution[:]
 
-        new_solution_set = frozenset(new_solution)
-        if new_solution_set in seen_solutions:
-            repeated_solutions_count += 1
-            logging.info(f"    ↺ Duplicate feature combination: {list(new_solution_set)} — Skipping")
+        # Definir Movimentos Possíveis
+        possible_moves = []
+
+        # Add/Swap só são possíveis se houver candidatos fora da solução
+        if candidates_to_add:
+            possible_moves.append('add')
+            if candidates_to_remove:
+                possible_moves.append('swap')
+        # Remove só é possível se a solução tiver um tamanho mínimo (ex: > 1 ou 2)
+        if len(candidates_to_remove) > 2:
+            possible_moves.append('remove')
+        if not possible_moves:
+            logging.info(
+                f"    → Local Iteration {iteration + 1}/{args.local_iterations} | No moves possible. Stopping.")
+            break
+
+        # Escolher e Executar Movimento
+        move_type = random.choice(possible_moves)
+        neighbor_solution = []
+
+        try:
+            if move_type == 'swap':
+                feat_out = random.choice(candidates_to_remove)
+                feat_in = random.choice(candidates_to_add)
+                neighbor_solution = [f for f in current_solution if f != feat_out]
+                neighbor_solution.append(feat_in)
+
+            elif move_type == 'add':
+                feat_in = random.choice(candidates_to_add)
+                neighbor_solution = current_solution[:]
+                neighbor_solution.append(feat_in)
+
+            elif move_type == 'remove':
+                feat_out = random.choice(candidates_to_remove)
+                neighbor_solution = [f for f in current_solution if f != feat_out]
+
+        except IndexError:
             continue
 
-        sorted_indices = sorted(new_solution)
-        f1_score = evaluate_algorithm(new_solution, algorithm)
-        logging.info(f"    ✓ Evaluated F1-Score: {f1_score:.4f} for solution: {sorted_indices}")
+        neighbor_solution.sort()  # Ordena para garantir consistência no frozenset
+        neighbor_solution_set = frozenset(neighbor_solution)
 
-        if f1_score > max_f1_score and new_solution_set != frozenset(best_solution):
+        # Verifica se solução é válida ou duplicada
+        if not neighbor_solution:
+            continue
+        if neighbor_solution_set in seen_solutions:
+            repeated_solutions_count += 1
+            logging.info(f" ↺ Duplicate: {list(neighbor_solution_set)} — Skipping")
+            continue
+
+        seen_solutions.add(neighbor_solution_set)
+
+        f1_score = evaluate_algorithm(neighbor_solution, algorithm)
+
+        log_msg = f"    → Local Iter {iteration + 1}/{args.local_iterations} | Move: {move_type.upper():<6} | Size: {len(neighbor_solution):<2} | F1: {f1_score:.4f}"
+
+        if f1_score > max_f1_score:
             max_f1_score = f1_score
-            best_solution = new_solution
-            seen_solutions.add(new_solution_set)
-            sorted_best = sorted(best_solution)
-            logging.info(
-                f"        Improvement found! New best solution: {sorted_best} with F1-Score: {max_f1_score:.4f}")
-        elif new_solution_set == frozenset(best_solution):
-            logging.info("No real improvement (same as best solution)")
+            best_solution = neighbor_solution
+            logging.info(f"{log_msg} >>> New Best! <<<")
+        else:
+            logging.info(log_msg)
 
-    logging.info(f"Local Search completed. Best F1-Score: {max_f1_score}, Best Solution: {best_solution}")
+        logging.info(f"Local Search completed. Best F1: {max_f1_score:.4f}, Size: {len(best_solution)}")
+
     return max_f1_score, best_solution, repeated_solutions_count
 
 def construction(args):
@@ -146,6 +185,31 @@ def construction(args):
 
     start_time = time.perf_counter()
 
+    # --- NOVOS PARÂMETROS PARA CONSTRUÇÃO VARIÁVEL E SEMI-GREEDY ---
+    # Define alpha (padrão 1.0 se não existir, ou seja, aleatório puro)
+    alpha = getattr(args, 'alpha', 1.0)
+    alpha = max(0.01, min(1.0, alpha))  # Garante limites seguros
+
+    # Define intervalo de tamanho (min_k e max_k)
+    # Se não definidos nos args, usa o initial_solution fixo como fallback para o min
+    min_k = getattr(args, 'min_initial_solution', args.initial_solution)
+    # O máximo nunca pode ser maior que a própria RCL
+    max_k = min(getattr(args, 'max_initial_solution', args.rcl_size), len(RCL))
+
+    if min_k > max_k: min_k = max_k
+    # --- ---
+
+    # --- LÓGICA REATIVA- Inicialização ---
+    # Lista de tamanhos possíveis
+    possible_sizes = list(range(min_k, max_k + 1))
+    # Pesos iniciais iguais para todos os tamanhos (chance igual de ser sorteado)
+    size_weights = {k: 1.0 for k in possible_sizes}
+    # Histórico para guardar os F1-Scores de cada tamanho
+    size_history = {k: [] for k in possible_sizes}
+    # Fator de suavização para garantir que nenhum tamanho fique com probabilidade zero
+    smooth_factor = 0.05
+    # -------------------------------------------------------
+
     if args.rcl_size > len(feature_names):
         raise ValueError("The RCL size cannot exceed the number of available features.")
     if args.initial_solution > args.rcl_size:
@@ -153,9 +217,31 @@ def construction(args):
 
     for iteration in range(args.constructive_iterations):
         # Ensure the initial solution is unique
+        attempts = 0
         while True:
-            # Randomly select k features from RCL to generate initial solutions
-            selected_features = random.sample(RCL, k=args.initial_solution)
+            # --- 1. ESCOLHA DO TAMANHO (REATIVA) ---
+            # Em vez de randint, sorteia com base nos pesos aprendidos
+            weights_list = [size_weights[k] for k in possible_sizes]
+            # random.choices retorna uma lista, pegamos o primeiro item
+            current_k_size = random.choices(possible_sizes, weights=weights_list, k=1)[0]
+
+            selected_features = []
+            current_rcl_pool = RCL.copy()  # Cópia para remover itens sem afetar a lista original
+
+            # 2. Construção iterativa baseada em Alpha
+            while len(selected_features) < current_k_size and current_rcl_pool:
+                # Define o tamanho da lista restrita de candidatos (RCL da iteração)
+                # Alpha % dos melhores restantes
+                limit = max(1, int(len(current_rcl_pool) * alpha))
+                candidates = current_rcl_pool[:limit]
+
+                # Escolhe um aleatoriamente dessa fatia superior
+                chosen = random.choice(candidates)
+                selected_features.append(chosen)
+                current_rcl_pool.remove(chosen)
+
+            # -------------------------------------------------------
+
             # Convert feature names into indices
             solution = [feature_names.index(feature_name) for feature_name in selected_features]
             solution_set = frozenset(selected_features)
@@ -167,8 +253,33 @@ def construction(args):
                 repeated_solutions_count += 1  # Incrementa o contador
                 logging.info(f"Repeated initial solution found: {solution}, generating a new solution...")
 
+            attempts += 1
+            if attempts > 50:  # Evita loop infinito se o espaço de busca for pequeno
+                break
+
         f1_score = evaluate_algorithm(solution, args.algorithm)
         logging.info(f"F1-Score: {f1_score} for solution: {solution}")
+        size_history[current_k_size].append(f1_score)
+
+        # A cada 10 iterações, recalibra a "roleta"
+        if (iteration + 1) % 10 == 0:
+            max_avg_f1 = 0
+            avgs = {}
+            # Calcula a média de F1 para cada tamanho testado até agora
+            for k in possible_sizes:
+                if size_history[k]:
+                    avg = sum(size_history[k]) / len(size_history[k])
+                else:
+                    avg = 0  # Se ainda não foi sorteado
+                avgs[k] = avg
+                if avg > max_avg_f1: max_avg_f1 = avg
+
+            # Atualiza os pesos: quanto maior o F1 médio, maior o peso
+            for k in possible_sizes:
+                # Normaliza pelo melhor para manter a escala, soma o fator de suavização
+                normalized_score = (avgs[k] / max_avg_f1) if max_avg_f1 > 0 else 0
+                size_weights[k] = normalized_score + smooth_factor
+
         all_solutions.append((iteration, f1_score, solution))
 
         if f1_score > 0.0:
