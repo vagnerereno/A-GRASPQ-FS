@@ -340,6 +340,72 @@ def plot_solutions_with_priority(all_solutions, priority_queue):
     plt.savefig(f"priority_plot.png")
 
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def plot_size_evolution(initial_sizes, final_sizes, f1_initial, f1_final, filename="evolution_plot.png"):
+    n_solutions = len(initial_sizes)
+    indices = np.arange(n_solutions)
+
+    plt.figure(figsize=(10, 6))
+
+    offset = 0.2
+
+    for i in indices:
+        start = initial_sizes[i]
+        end = final_sizes[i]
+
+        if end > start:
+            color = '#2ca02c'  # Verde (Cresceu)
+            label_change = "Grew"
+        elif end < start:
+            color = '#d62728'  # Vermelho (Encolheu)
+            label_change = "Shrank"
+        else:
+            color = '#1f77b4'  # Azul (Igual)
+            label_change = "Same"
+
+        plt.arrow(i, start, 0, end - start,
+                  head_width=0.15, head_length=0.3 if start != end else 0,
+                  fc=color, ec=color, length_includes_head=True, alpha=0.7)
+
+        # Ponto Inicial (Cinza)
+        plt.scatter(i, start, color='gray', s=80, zorder=3, label='Initial Size' if i == 0 else "")
+
+        # Ponto Final (Colorido)
+        plt.scatter(i, end, color=color, s=80, zorder=3, label='Final Size' if i == 0 else "")
+
+        # Anotar o F1 Score final acima do ponto
+        plt.text(i, max(start, end) + 0.5, f"{f1_final[i]:.3f}", ha='center', fontsize=12)
+
+    plt.title(f"Evolution of Solution Sizes: Constructive vs. Local Search", fontsize=14)
+    plt.xlabel("Solution ID (Sorted by Initial Quality)", fontsize=14)
+    plt.ylabel("Number of Features (Size)", fontsize=14)
+    plt.tick_params(axis='both', labelsize=14)
+    plt.xticks(indices, [f"S{i + 1}" for i in indices])
+    # plt.grid(axis='y', linestyle='--', alpha=0.5)
+
+    # Legenda customizada para explicar as cores
+    from matplotlib.lines import Line2D
+    custom_lines = [Line2D([0], [0], color='#2ca02c', lw=3),
+                    Line2D([0], [0], color='#d62728', lw=3),
+                    Line2D([0], [0], color='#1f77b4', lw=3),
+                    Line2D([0], [0], marker='o', color='w', markerfacecolor='gray', markersize=12)]
+
+    plt.legend(custom_lines, ['Grew (Add)', 'Shrank (Remove)', 'Same Size (Swap)', 'Initial Size'], loc='best')
+
+    y_min = min(min(initial_sizes), min(final_sizes))
+    y_max = max(max(initial_sizes), max(final_sizes))
+
+    plt.yticks(np.arange(y_min, y_max + 1, 1))
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300)
+    print(f"Plot saved to {filename}")
+    plt.close()
+
 def plot_solutions(all_solutions, priority_queue_snapshot, local_search_improvements):
     plt.figure(figsize=(9, 4))
 
