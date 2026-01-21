@@ -264,6 +264,51 @@ def load_data(dataset_name='ereninho', base_path='data/'):
         except Exception as e:
             logger.exception(f"An unexpected error occurred during Ransomset processing: {e}")
             raise
+    elif dataset_name == 'cic-iot':
+        filepath = os.path.join(base_path, 'cic-iot_10k.csv')
+        target_column = 'label'
+
+        try:
+            df = pd.read_csv(filepath, sep=',', skipinitialspace=True)
+            df.columns = df.columns.str.strip()
+
+            logger.info(f"Loaded {dataset_name}. Shape: {df.shape}")
+
+            cols_to_drop = ['IAT']
+
+            cols_to_drop_exist = [col for col in cols_to_drop if col in df.columns]
+
+            if cols_to_drop_exist:
+                logger.warning(
+                    f"Manually removing suspicious/dominant features for {dataset_name}: {cols_to_drop_exist}")
+                df = df.drop(columns=cols_to_drop_exist)
+
+            if target_column not in df.columns:
+                raise KeyError(f"Target column '{target_column}' not found in {dataset_name}.")
+
+            constant_columns = [col for col in df.columns if df[col].nunique(dropna=False) == 1]
+            if constant_columns:
+                logger.warning(
+                    f"Removing {len(constant_columns)} constant columns for {dataset_name}: {constant_columns}")
+                df = df.drop(columns=constant_columns)
+
+            X = df.drop(columns=[target_column])
+            y = df[target_column]
+
+            if X.isnull().values.any() or y.isnull().values.any():
+                logger.warning(f"NaN values detected in {dataset_name}. Dropping rows with NaNs.")
+                original_len = len(df)
+                df = df.dropna()
+                X = df.drop(columns=[target_column])
+                y = df[target_column]
+                logger.info(f"Dropped {original_len - len(df)} rows containing NaNs.")
+
+        except FileNotFoundError:
+            logger.error(f"File not found: {filepath}")
+            raise
+        except Exception as e:
+            logger.exception(f"An unexpected error occurred during CIC-IoT processing: {e}")
+            raise
     else:
         raise ValueError(f"Unsupported dataset_name: {dataset_name}. Choose 'ereninho', 'batadal', 'wadi', or 'ransomset'.")
 
@@ -344,13 +389,43 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_size_evolution(initial_sizes, final_sizes, f1_initial, f1_final, filename="evolution_plot.png"):
+def plot_size_evolution(initial_sizes, final_sizes, f1_initial, f1_final, filename="evolution_plot.png", save_data=True):
     n_solutions = len(initial_sizes)
     indices = np.arange(n_solutions)
 
     plt.figure(figsize=(10, 6))
 
     offset = 0.2
+
+    # Save Data to Replot if necessary
+    if save_data:
+        data = []
+        for i in indices:
+            start = initial_sizes[i]
+            end = final_sizes[i]
+
+            if end > start:
+                change = "grew"
+            elif end < start:
+                change = "shrank"
+            else:
+                change = "same"
+
+            data.append({
+                "solution_id": i + 1,
+                "initial_size": start,
+                "final_size": end,
+                "delta_size": end - start,
+                "f1_initial": f1_initial[i],
+                "f1_final": f1_final[i],
+                "change_type": change
+            })
+
+        df = pd.DataFrame(data)
+
+        csv_filename = os.path.splitext(filename)[0] + "_data.csv"
+        df.to_csv(csv_filename, index=False)
+        print(f"Data saved to {csv_filename}")
 
     for i in indices:
         start = initial_sizes[i]
@@ -456,7 +531,7 @@ def parse_args():
 
     parser.add_argument(
         "-d", "--dataset",
-        type=str, choices=['ereninho', 'drone', 'wadi', 'batadal', 'wustl', 'ransomset'],
+        type=str, choices=['ereninho', 'drone', 'wadi', 'batadal', 'wustl', 'ransomset', 'cic-iot'],
         default='ereninho',
         help="Dataset to use."
     )
