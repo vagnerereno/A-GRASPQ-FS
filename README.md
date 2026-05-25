@@ -134,11 +134,11 @@ python main.py --dataset ereninho --algorithm nb --rcl_size 10 --init_sol 5 --pq
     <pre><code>docker build -t a-graspq-fs .</code></pre>
   </li>
   <li>
-    <strong>Execute o container (montando a pasta <code>data/</code> local):</strong>
+    <strong>Execute o container:</strong>
     <pre><code>docker run --rm -v $(pwd)/data:/app/data -v $(pwd)/results:/app/results a-graspq-fs -d ereninho -a nb -rcl 10 -is 5 -pq 30 -lc 1000 -cc 100</code></pre>
   </li>
 </ol>
-<p>ℹ️ O <code>-v</code> monta sua pasta local de dados e resultados dentro do container, garantindo que os arquivos gerados fiquem acessíveis após a execução.</p>
+<p>ℹ️ O <code>-v $(pwd)/data:/app/data</code> é obrigatório para que o container acesse seu dataset local. O <code>-v $(pwd)/results:/app/results</code> é recomendado para que os arquivos gerados (logs, gráficos) fiquem acessíveis na sua máquina após o container encerrar.</p>
 
 <h2 id="parametros">🧾 Parâmetros Disponíveis</h2>
 
@@ -186,13 +186,13 @@ python baselines.py -d ereninho -m rfecv -a rf
 </ul>
 
 <h2 id="saidas">📤 Saídas Geradas</h2>
-<p>Após a execução, os seguintes arquivos são gerados:</p>
+<p>Após a execução, os seguintes arquivos são gerados automaticamente na pasta <code>results/</code> (criada pelo próprio script se não existir):</p>
 <ul>
   <li><code>results/log.txt</code> — Log completo da execução (parâmetros, F1-Scores, features selecionadas, tempos)</li>
-  <li><code>all_bestsolution.png</code> / <code>all_bestsolution.pdf</code> — Gráfico das soluções construídas vs. entrada na fila de prioridade vs. melhoria na busca local</li>
-  <li><code>results/size_evolution_*.png</code> — Gráfico de evolução do tamanho das soluções (inicial vs. final após busca local), reproduzindo a Fig. 2 do artigo</li>
+  <li><code>results/all_bestsolution.png</code> / <code>results/all_bestsolution.pdf</code> — Gráfico das soluções construídas vs. entrada na fila de prioridade vs. melhoria na busca local</li>
+  <li><code>results/evolution_plot.png</code> — Gráfico de evolução do tamanho das soluções (inicial vs. final após busca local), reproduzindo a Fig. 2 do artigo</li>
+  <li><code>results/evolution_plot_data.csv</code> — Dados numéricos do gráfico de evolução (para replot ou análise posterior)</li>
 </ul>
-<p>⚠️ Certifique-se de que a pasta <code>results/</code> exista antes de executar. Crie-a com <code>mkdir results</code> se necessário.</p>
 
 ---
 
@@ -331,11 +331,11 @@ python main.py --dataset ereninho --algorithm nb --rcl_size 10 --init_sol 5 --pq
     <pre><code>docker build -t a-graspq-fs .</code></pre>
   </li>
   <li>
-    <strong>Run the container (mounting local <code>data/</code> and <code>results/</code> folders):</strong>
+    <strong>Run the container:</strong>
     <pre><code>docker run --rm -v $(pwd)/data:/app/data -v $(pwd)/results:/app/results a-graspq-fs -d ereninho -a nb -rcl 10 -is 5 -pq 30 -lc 1000 -cc 100</code></pre>
   </li>
 </ol>
-<p>ℹ️ The <code>-v</code> flags mount your local data and results folders inside the container, ensuring generated files are accessible after execution.</p>
+<p>ℹ️ The <code>-v $(pwd)/data:/app/data</code> flag is required so the container can access your local dataset. The <code>-v $(pwd)/results:/app/results</code> flag is recommended so that generated files (logs, plots) are accessible on your machine after the container exits.</p>
 
 <h2>🧾 Available Parameters</h2>
 
@@ -383,12 +383,12 @@ python baselines.py -d ereninho -m rfecv -a rf
 </ul>
 
 <h2>📤 Generated Outputs</h2>
-<p>After execution, the following files are generated:</p>
+<p>After execution, the following files are generated automatically inside the <code>results/</code> folder (created by the script if it does not exist):</p>
 <ul>
   <li><code>results/log.txt</code> — Full execution log (parameters, F1-Scores, selected features, timing)</li>
-  <li><code>all_bestsolution.png</code> / <code>all_bestsolution.pdf</code> — Plot of constructed solutions vs. priority queue entries vs. local search improvements</li>
-  <li><code>results/size_evolution_*.png</code> — Size evolution plot (initial vs. final after local search), reproducing Fig. 2 from the paper</li>
+  <li><code>results/all_bestsolution.png</code> / <code>results/all_bestsolution.pdf</code> — Plot of constructed solutions vs. priority queue entries vs. local search improvements</li>
+  <li><code>results/evolution_plot.png</code> — Size evolution plot (initial vs. final after local search), reproducing Fig. 2 from the paper</li>
+  <li><code>results/evolution_plot_data.csv</code> — Numerical data from the evolution plot (for replotting or further analysis)</li>
 </ul>
-<p>⚠️ Make sure the <code>results/</code> folder exists before running. Create it with <code>mkdir results</code> if needed.</p>
 
 <hr>
