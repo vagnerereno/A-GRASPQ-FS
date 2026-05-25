@@ -18,7 +18,7 @@ def load_data(dataset_name='ereninho', base_path='data/'):
     logger.info(f"Loading dataset: {dataset_name}")
 
     if dataset_name == 'ereninho':
-        filepath = os.path.join(base_path, 'ERENINHO_10k.csv')
+        filepath = os.path.join(base_path, 'hibrid_dataset_GOOSE_train.csv')
         target_column = 'class'
         try:
             df = pd.read_csv(filepath, sep=',', skipinitialspace=True)
