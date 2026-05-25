@@ -105,11 +105,9 @@ source venv/bin/activate    # no Unix/Mac</code></pre>
     <pre><code>pip install -r requirements.txt</code></pre>
   </li>
   <li>
-    <strong>Coloque o dataset na pasta <code>data/</code></strong> (ex: <code>hibrid_dataset_GOOSE_train.csv</code> para o dataset ERENO).
-  </li>
-  <li>
     <strong>Execute com a configuração do artigo (recomendado para reprodutibilidade):</strong>
     <pre><code>python main.py -d ereninho -a nb -rcl 10 -is 5 -pq 30 -lc 1000 -cc 100</code></pre>
+    <p>ℹ️ O dataset <code>hibrid_dataset_GOOSE_train.csv</code> (ERENO) já está incluído na pasta <code>data/</code> para testes imediatos. Para outros datasets, consulte a seção <a href="#datasets">Datasets e Direitos Autorais</a>.</p>
   </li>
 </ol>
 
@@ -134,11 +132,15 @@ python main.py --dataset ereninho --algorithm nb --rcl_size 10 --init_sol 5 --pq
     <pre><code>docker build -t a-graspq-fs .</code></pre>
   </li>
   <li>
-    <strong>Execute o container:</strong>
-    <pre><code>docker run --rm -v $(pwd)/data:/app/data -v $(pwd)/results:/app/results a-graspq-fs -d ereninho -a nb -rcl 10 -is 5 -pq 30 -lc 1000 -cc 100</code></pre>
+    <strong>Teste rápido (dataset ERENO já incluso no repositório):</strong>
+    <pre><code>docker run --rm -v $(pwd)/results:/app/results a-graspq-fs -d ereninho -a nb -rcl 10 -is 5 -pq 10 -lc 50 -cc 50</code></pre>
+  </li>
+  <li>
+    <strong>Execução completa com dataset externo:</strong>
+    <pre><code>docker run --rm -v $(pwd)/data:/app/data -v $(pwd)/results:/app/results a-graspq-fs -d ereninho -a nb -rcl 10 -is 1 -max_is 33 -pq 30 -lc 1000 -cc 100</code></pre>
   </li>
 </ol>
-<p>ℹ️ O <code>-v $(pwd)/data:/app/data</code> é obrigatório para que o container acesse seu dataset local. O <code>-v $(pwd)/results:/app/results</code> é recomendado para que os arquivos gerados (logs, gráficos) fiquem acessíveis na sua máquina após o container encerrar.</p>
+<p>ℹ️ O <code>-v $(pwd)/results:/app/results</code> é recomendado para que os arquivos gerados (logs, gráficos) fiquem acessíveis na sua máquina após o container encerrar. O <code>-v $(pwd)/data:/app/data</code> só é necessário ao usar datasets externos não incluídos no repositório.</p>
 
 <h2 id="parametros">🧾 Parâmetros Disponíveis</h2>
 
@@ -302,11 +304,9 @@ source venv/bin/activate    # on Unix/Mac</code></pre>
     <pre><code>pip install -r requirements.txt</code></pre>
   </li>
   <li>
-    <strong>Place the dataset in the <code>data/</code> folder</strong> (e.g., <code>hibrid_dataset_GOOSE_train.csv</code> for the ERENO dataset).
-  </li>
-  <li>
     <strong>Run with the paper configuration (recommended for reproducibility):</strong>
     <pre><code>python main.py -d ereninho -a nb -rcl 10 -is 5 -pq 30 -lc 1000 -cc 100</code></pre>
+    <p>ℹ️ The <code>hibrid_dataset_GOOSE_train.csv</code> (ERENO) dataset is already included in the <code>data/</code> folder for immediate testing. For other datasets, see the <a href="#datasets">Datasets and Licensing</a> section.</p>
   </li>
 </ol>
 
@@ -331,11 +331,15 @@ python main.py --dataset ereninho --algorithm nb --rcl_size 10 --init_sol 5 --pq
     <pre><code>docker build -t a-graspq-fs .</code></pre>
   </li>
   <li>
-    <strong>Run the container:</strong>
-    <pre><code>docker run --rm -v $(pwd)/data:/app/data -v $(pwd)/results:/app/results a-graspq-fs -d ereninho -a nb -rcl 10 -is 5 -pq 30 -lc 1000 -cc 100</code></pre>
+    <strong>Quick test (ERENO dataset already included in the repository):</strong>
+    <pre><code>docker run --rm -v $(pwd)/results:/app/results a-graspq-fs -d ereninho -a nb -rcl 10 -is 5 -pq 10 -lc 50 -cc 50</code></pre>
+  </li>
+  <li>
+    <strong>Full run with external dataset:</strong>
+    <pre><code>docker run --rm -v $(pwd)/data:/app/data -v $(pwd)/results:/app/results a-graspq-fs -d ereninho -a nb -rcl 10 -is 1 -max_is 33 -pq 30 -lc 1000 -cc 100</code></pre>
   </li>
 </ol>
-<p>ℹ️ The <code>-v $(pwd)/data:/app/data</code> flag is required so the container can access your local dataset. The <code>-v $(pwd)/results:/app/results</code> flag is recommended so that generated files (logs, plots) are accessible on your machine after the container exits.</p>
+<p>ℹ️ The <code>-v $(pwd)/results:/app/results</code> flag is recommended so that generated files (logs, plots) are accessible on your machine after the container exits. The <code>-v $(pwd)/data:/app/data</code> flag is only needed when using external datasets not included in the repository.</p>
 
 <h2>🧾 Available Parameters</h2>
 
