@@ -310,7 +310,7 @@ def load_data(dataset_name='ereninho', base_path='data/'):
             logger.exception(f"An unexpected error occurred during CIC-IoT processing: {e}")
             raise
     else:
-        raise ValueError(f"Unsupported dataset_name: {dataset_name}. Choose 'ereninho', 'batadal', 'wadi', or 'ransomset'.")
+        raise ValueError(f"Unsupported dataset_name: '{dataset_name}'. Choose one of: 'ereninho', 'batadal', 'wadi', 'wustl', 'drone', 'ransomset', 'cic-iot'.")
 
     feature_names = X.columns.tolist()
     logger.info(f"Dataset '{dataset_name}' processed. Final features: {len(feature_names)}. Target: '{target_column}'.")
@@ -330,12 +330,14 @@ def preprocess_data(X_train, y_train, X_test, y_test):
     if len(cat_cols) > 0:
         encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
         cat_encoded = encoder.fit_transform(X_train[cat_cols])
-        cat_encoded_df = pd.DataFrame(cat_encoded, columns=encoder.get_feature_names_out(cat_cols))
+        cat_encoded_df = pd.DataFrame(cat_encoded, columns=encoder.get_feature_names_out(cat_cols),
+                                      index=X_train.index)
 
         # Drop original categorical columns and concat encoded columns
         X_train = pd.concat([X_train[num_cols], cat_encoded_df], axis=1)
         cat_encoded_test = encoder.transform(X_test[cat_cols])
-        cat_encoded_test_df = pd.DataFrame(cat_encoded_test, columns=encoder.get_feature_names_out(cat_cols))
+        cat_encoded_test_df = pd.DataFrame(cat_encoded_test, columns=encoder.get_feature_names_out(cat_cols),
+                                           index=X_test.index)
         X_test = pd.concat([X_test[num_cols], cat_encoded_test_df], axis=1)
 
     # Initialize LabelEncoder for labels/classes
@@ -517,8 +519,8 @@ def plot_solutions(all_solutions, priority_queue_snapshot, local_search_improvem
     plt.tick_params(axis='y', labelsize=12)  # Aumenta o tamanho da fonte das marcações do eixo y
     plt.tight_layout()
 
-    plt.savefig(f"all_bestsolution.png")
-    plt.savefig(f"all_bestsolution.pdf")
+    plt.savefig(f"results/all_bestsolution.png")
+    plt.savefig(f"results/all_bestsolution.pdf")
 
 
 

@@ -15,10 +15,10 @@ class MaxPriorityQueue:
 
         lastelt = self.heap.pop()
         if self.heap:
-            minitem = self.heap[0]
+            maxitem = self.heap[0]
             self.heap[0] = lastelt
             self._sift_down(0)
-            return minitem
+            return maxitem
         return lastelt
 
     def _sift_up(self, pos):

@@ -11,9 +11,11 @@ from sklearn.svm import SVC, LinearSVC
 import xgboost as xgb
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.neighbors import KNeighborsClassifier
+import os
 import utils
 from priority_queue import MaxPriorityQueue
 import logging
+os.makedirs("results", exist_ok=True)
 log_filename = f"results/log.txt"
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -218,106 +220,7 @@ def local_search(initial_solution, repeated_solutions_count, algorithm, rcl_size
 
     return final_robust_f1, best_solution, repeated_solutions_count, unique_neighbors_explored
 
-# def local_search(initial_solution, repeated_solutions_count, algorithm, rcl_size):
-#     # Evaluate the initial solution.
-#     max_f1_score = evaluate_algorithm(initial_solution, algorithm, use_sampling=True)
-#     best_solution = initial_solution.copy()
-#     seen_solutions = {frozenset(initial_solution)}
-#     consecutive_repeats = 0
-#     max_consecutive_repeats = 50
-#     unique_neighbors_explored = 0
-#     logging.info(f"Starting VNS Local Search. Initial F1: {max_f1_score:.4f}, Size: {len(best_solution)}")
-#
-#     for iteration in range(args.local_iterations):
-#         current_solution = best_solution.copy()
-#
-#         # --- 1. Define Candidates ---
-#         rcl_indices = [feature_names.index(feat) for feat, _ in sorted_features[:rcl_size]]
-#         candidates_to_add = [idx for idx in rcl_indices if idx not in current_solution]
-#         candidates_to_remove = current_solution[:]
-#
-#         # --- 2. Define Movements ---
-#         possible_moves = []
-#         if candidates_to_add:
-#             possible_moves.append('add')
-#             if candidates_to_remove:
-#                 possible_moves.append('swap')
-#         if len(candidates_to_remove) > 2:
-#             possible_moves.append('remove')
-#
-#         if not possible_moves:
-#             logging.info(f"    → Local Iteration {iteration + 1} | No moves possible. Stopping.")
-#             break
-#
-#         # --- 3. Choose the Movement and Execute ---
-#         move_type = random.choice(possible_moves)
-#         neighbor_solution = []
-#
-#         try:
-#             if move_type == 'swap':
-#                 feat_out = random.choice(candidates_to_remove)
-#                 feat_in = random.choice(candidates_to_add)
-#                 neighbor_solution = [f for f in current_solution if f != feat_out]
-#                 neighbor_solution.append(feat_in)
-#             elif move_type == 'add':
-#                 feat_in = random.choice(candidates_to_add)
-#                 neighbor_solution = current_solution[:]
-#                 neighbor_solution.append(feat_in)
-#             elif move_type == 'remove':
-#                 feat_out = random.choice(candidates_to_remove)
-#                 neighbor_solution = [f for f in current_solution if f != feat_out]
-#         except IndexError:
-#             continue
-#
-#         neighbor_solution.sort()
-#         neighbor_solution_set = frozenset(neighbor_solution)
-#
-#         # --- 4. Verification of Duplicates ("Visited?") ---
-#         if not neighbor_solution: continue
-#
-#         if neighbor_solution_set in seen_solutions:
-#             repeated_solutions_count += 1
-#             consecutive_repeats += 1
-#             logging.info(f" ↺ Duplicate skipping")
-#
-#             # SE atingir o limite de tentativas repetidas, aborta
-#             if consecutive_repeats >= max_consecutive_repeats:
-#                 logging.info(f"    → Stopping early: {max_consecutive_repeats} consecutive repeated solutions.")
-#                 break
-#             continue
-#
-#         consecutive_repeats = 0
-#         unique_neighbors_explored += 1
-#         seen_solutions.add(neighbor_solution_set)
-#
-#         # --- 5. Fast Evaluation ---
-#         # Note: The evaluate_algorithm uses the 'slice' defined in args.evaluation_sample_size
-#         f1_score = evaluate_algorithm(neighbor_solution, algorithm, use_sampling=True)
-#
-#         log_msg = f"    → Local Iter {iteration + 1}/{args.local_iterations} | Move: {move_type.upper():<6} | Size: {len(neighbor_solution):<2} | F1: {f1_score:.4f}"
-#
-#         # --- 6. Acceptance Criteria ("Improved?") ---
-#         if f1_score > max_f1_score:
-#             max_f1_score = f1_score
-#             best_solution = neighbor_solution
-#             logging.info(f"    >>> New Best! Move: {move_type.upper()} | Size: {len(neighbor_solution)} | Fast F1: {f1_score:.4f}")
-#             # Return to the loop with the new best solution (Arrow "Yes")
-#         else:
-#             logging.info(log_msg)
-#             # Return to the loop while keeping the previous one (Arrow "No")
-#
-#     # --- 7. Final Robust Evaluation ---
-#     # Recalculate the F1 value of the best solution using 100% of the data to obtain the true value.
-#     logging.info("Running Final Robust Evaluation (100% data)...")
-#
-#     # Saves the original sample size.
-#     final_robust_f1 = evaluate_algorithm(best_solution, algorithm, use_sampling=False)
-#
-#     logging.info(
-#         f"Local Search completed. Robust F1: {final_robust_f1:.4f} (Est: {max_f1_score:.4f}), Size: {len(best_solution)}")
-#
-#     # The Robust F1 returns.
-#     return final_robust_f1, best_solution, repeated_solutions_count, unique_neighbors_explored
+
 
 
 def construction(args):
@@ -488,6 +391,7 @@ def construction(args):
         original_size = len(current_solution)
 
         # --- MATHEMATICAL CALCULATION OF NEIGHBORHOOD ---
+        k = len(current_solution)  # adaptive size — varies per solution
         possible_adds = N_total_features - k
         possible_removes = k
         possible_swaps = k * (N_total_features - k)
@@ -547,7 +451,8 @@ def construction(args):
     utils.plot_solutions(all_solutions, priority_queue_snapshot, local_search_improvements)
 
     try:
-        utils.plot_size_evolution(plot_data_initial_size, plot_data_final_size, plot_data_initial_f1, plot_data_final_f1)
+        utils.plot_size_evolution(plot_data_initial_size, plot_data_final_size, plot_data_initial_f1, plot_data_final_f1,
+                                  filename="results/evolution_plot.png")
     except Exception as e:
         logging.error(f"Could not plot size evolution: {e}")
 
@@ -599,4 +504,3 @@ if __name__ == '__main__':
     # Execute construction and local search
     construction(args)
     logging.info(f"Baseline F1-Score (All Features with {args.algorithm.upper()}): {baseline_f1:.4f}")
-
