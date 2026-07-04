@@ -1,0 +1,54 @@
+cff-version: 1.2.0
+message: "If you use A-GRASPQ-FS in academic work, please cite the associated ISCC 2026 paper and the software release."
+title: "A-GRASPQ-FS: Adaptive GRASPQ Feature Selection with Self-Tuning Subset Size"
+type: software
+version: 1.0.0
+date-released: 2026-07-04
+repository-code: "https://github.com/vagnerereno/A-GRASPQ-FS"
+license: MIT
+keywords:
+  - feature selection
+  - adaptive feature selection
+  - metaheuristics
+  - GRASP
+  - machine learning
+  - intrusion detection systems
+  - scikit-learn
+authors:
+  - family-names: Quincozes
+    given-names: Vagner Ereno
+    affiliation: "Federal Fluminense University, Brazil"
+    email: vequincozes@midiacom.uff.br
+  - family-names: Quincozes
+    given-names: Silvio E.
+    affiliation: "Federal University of Pampa, Brazil"
+    email: silvioquincozes@unipampa.edu.br
+  - family-names: Albuquerque
+    given-names: Célio
+    affiliation: "Federal Fluminense University, Brazil"
+    email: celio@ic.uff.br
+  - family-names: Passos
+    given-names: Diego
+    affiliation: "Instituto Superior de Engenharia de Lisboa, Instituto Politécnico de Lisboa, Portugal"
+    email: diego.passos@isel.pt
+  - family-names: Mossé
+    given-names: Daniel
+    affiliation: "University of Pittsburgh, United States"
+    email: mosse@pitt.edu
+preferred-citation:
+  type: conference-paper
+  title: "Adaptive Feature Selection with Self-Tuning Subset Size for Intrusion Detection"
+  year: 2026
+  conference: "31st IEEE Symposium on Computers and Communications (ISCC)"
+  location: "Algarve, Portugal"
+  authors:
+    - family-names: Quincozes
+      given-names: Vagner E.
+    - family-names: Quincozes
+      given-names: Silvio E.
+    - family-names: Albuquerque
+      given-names: Célio
+    - family-names: Passos
+      given-names: Diego
+    - family-names: Mossé
+      given-names: Daniel

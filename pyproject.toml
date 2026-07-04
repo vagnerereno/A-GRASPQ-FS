@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agraspqfs"
+version = "1.0.0"
+description = "Adaptive GRASP-based feature selection with self-tuning subset size"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Vagner Ereno Quincozes", email = "vequincozes@midiacom.uff.br"},
+  {name = "Silvio E. Quincozes", email = "silvioquincozes@unipampa.edu.br"},
+  {name = "Célio Albuquerque", email = "celio@ic.uff.br"},
+  {name = "Diego Passos", email = "diego.passos@isel.pt"},
+  {name = "Daniel Mossé", email = "mosse@pitt.edu"},
+]
+maintainers = [
+  {name = "Vagner Ereno Quincozes", email = "vequincozes@midiacom.uff.br"},
+]
+keywords = ["feature-selection", "adaptive-feature-selection", "grasp", "metaheuristic", "machine-learning", "scikit-learn", "intrusion-detection"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy>=1.21",
+  "pandas>=1.3",
+  "scikit-learn>=1.0",
+  "joblib>=1.1",
+  "matplotlib>=3.4",
+]
+
+[project.optional-dependencies]
+xgboost = ["xgboost>=1.5"]
+dev = ["pytest>=7", "build>=1.0", "twine>=4.0"]
+
+[project.urls]
+Homepage = "https://github.com/vagnerereno/A-GRASPQ-FS"
+Repository = "https://github.com/vagnerereno/A-GRASPQ-FS"
+Issues = "https://github.com/vagnerereno/A-GRASPQ-FS/issues"
+Documentation = "https://github.com/vagnerereno/A-GRASPQ-FS/tree/main/docs"
+Changelog = "https://github.com/vagnerereno/A-GRASPQ-FS/blob/main/CHANGELOG.md"
+
+[project.scripts]
+agraspqfs = "agraspqfs.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
