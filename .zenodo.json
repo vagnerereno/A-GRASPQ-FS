@@ -1,0 +1,44 @@
+{
+  "title": "A-GRASPQ-FS: Adaptive GRASPQ Feature Selection with Self-Tuning Subset Size",
+  "upload_type": "software",
+  "description": "A-GRASPQ-FS is a scikit-learn compatible adaptive feature selector based on a reactive GRASP metaheuristic. It jointly optimizes subset cardinality and feature composition for a given dataset-classifier pair.",
+  "creators": [
+    {
+      "name": "Quincozes, Vagner Ereno",
+      "affiliation": "Federal Fluminense University, Brazil"
+    },
+    {
+      "name": "Quincozes, Silvio E.",
+      "affiliation": "Federal University of Pampa, Brazil"
+    },
+    {
+      "name": "Albuquerque, Célio",
+      "affiliation": "Federal Fluminense University, Brazil"
+    },
+    {
+      "name": "Passos, Diego",
+      "affiliation": "Instituto Superior de Engenharia de Lisboa, Instituto Politécnico de Lisboa, Portugal"
+    },
+    {
+      "name": "Mossé, Daniel",
+      "affiliation": "University of Pittsburgh, United States"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "feature selection",
+    "adaptive feature selection",
+    "GRASP",
+    "metaheuristics",
+    "intrusion detection",
+    "machine learning",
+    "scikit-learn"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/vagnerereno/A-GRASPQ-FS",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
