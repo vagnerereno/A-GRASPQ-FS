@@ -15,9 +15,9 @@ The original command-line research prototype used in the ISCC 2026 paper is stil
 
 This repository accompanies the ISCC 2026 paper:
 
-> Vagner E. Quincozes, Silvio E. Quincozes, Célio Albuquerque, Diego Passos, and Daniel Mossé. **Adaptive Feature Selection with Self-Tuning Subset Size for Intrusion Detection**. ISCC 2026, Algarve, Portugal, 2026.
+> Vagner E. Quincozes, Silvio E. Quincozes, Célio Albuquerque, Diego Passos, and Daniel Mossé. **Adaptive Feature Selection with Self-Tuning Subset Size for Intrusion Detection**. 31st IEEE Symposium on Computers and Communications (ISCC), Algarve, Portugal, 2026.
 
-If you use this software in academic work, please cite the paper and/or the software release. Citation files are provided in [`CITATION.cff`](CITATION.cff) and [`docs/CITATION.md`](docs/CITATION.md).
+If you use this software in academic work, please cite the paper and/or the software release. Citation files are provided in [CITATION.cff](https://github.com/vagnerereno/A-GRASPQ-FS/blob/main/CITATION.cff) and [docs/CITATION.md](https://github.com/vagnerereno/A-GRASPQ-FS/blob/main/docs/CITATION.md).
 
 ## Highlights in v1.0
 
@@ -174,7 +174,7 @@ python examples/pipeline_example.py
 python examples/benchmark_small.py
 ```
 
-A minimal notebook is available at [`examples/agraspqfs_demo.ipynb`](examples/agraspqfs_demo.ipynb).
+A minimal notebook is available at [`examples/agraspqfs_demo.ipynb`](https://github.com/vagnerereno/A-GRASPQ-FS/blob/main/examples/agraspqfs_demo.ipynb).
 
 ## Legacy research prototype
 
@@ -224,13 +224,13 @@ The CLI includes automatic preprocessing for CSV files: numeric columns are scal
 
 ## Performance note
 
-A-GRASPQ-FS is a wrapper method and can be computationally expensive because it repeatedly evaluates machine learning models. Use `preset="fast"`, `max_evaluations`, `time_budget`, `early_stopping_rounds`, and `evaluation_sample_size` to control cost. See [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
+A-GRASPQ-FS is a wrapper method and can be computationally expensive because it repeatedly evaluates machine learning models. Use `preset="fast"`, `max_evaluations`, `time_budget`, `early_stopping_rounds`, and `evaluation_sample_size` to control cost. See [`docs/PERFORMANCE.md`](https://github.com/vagnerereno/A-GRASPQ-FS/blob/main/docs/PERFORMANCE.md).
 
 ## License
 
-This project is released under the MIT License. See [`LICENSE`](LICENSE).
+This project is released under the MIT License. See [`LICENSE`](https://github.com/vagnerereno/A-GRASPQ-FS/blob/main/LICENSE).
 
-The license permits reuse, modification and distribution. For academic use, please cite the associated ISCC 2026 paper and/or the software release as described in [`CITATION.cff`](CITATION.cff).
+The license permits reuse, modification and distribution. For academic use, please cite the associated ISCC 2026 paper and/or the software release as described in [CITATION.cff](https://github.com/vagnerereno/A-GRASPQ-FS/blob/main/CITATION.cff).
 
 ## Citation
 
@@ -238,10 +238,8 @@ The license permits reuse, modification and distribution. For academic use, plea
 @inproceedings{quincozes2026agraspqfs,
   title     = {Adaptive Feature Selection with Self-Tuning Subset Size for Intrusion Detection},
   author    = {Quincozes, Vagner E. and Quincozes, Silvio E. and Albuquerque, Célio and Passos, Diego and Mossé, Daniel},
-  booktitle = {Proceedings of ISCC 2026},
+  booktitle = {Proceedings of 31st IEEE Symposium on Computers and Communications (ISCC)},
   address   = {Algarve, Portugal},
   year      = {2026}
 }
 ```
-
-Update the BibTeX with DOI/pages/publisher once the final proceedings metadata is available.
