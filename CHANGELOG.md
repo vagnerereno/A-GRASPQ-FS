@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1] - 2026-07-04
+
+### Changed
+- Improved README links for PyPI compatibility.
+- Executed and improved the demo notebook outputs.
+- Improved public documentation readability.
+- 
 ## 1.0.0
 
 - Added production-ready `agraspqfs` package.
